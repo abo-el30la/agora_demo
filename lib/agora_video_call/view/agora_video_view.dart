@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:agora_demo/config/agora.config.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -42,7 +41,7 @@ class AgoraVideoPage extends StatelessWidget {
                 Visibility(
                   visible: cubit.remoteUid.isNotEmpty,
                   child: Flexible(
-                    flex: 1,
+                    flex: cubit.remoteUid.isNotEmpty ? 1 : 0,
                     child: cubit.remoteUid.isNotEmpty
                         ? AgoraVideoView(
                             controller: VideoViewController.remote(
@@ -60,37 +59,45 @@ class AgoraVideoPage extends StatelessWidget {
                   alignment: Alignment.bottomCenter,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    child: Wrap(
+                      spacing: 20,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      alignment: WrapAlignment.center,
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(backgroundColor: cubit.isJoined ? Colors.green : Colors.red),
-                          onPressed: () {
-                            cubit.joinChannel(meetingChannelId: channelId, meetingToken: token);
+                          onPressed: () async {
+                            await cubit.joinChannel(meetingChannelId: channelId, meetingToken: token);
                           },
                           child: const Text('Join'),
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(backgroundColor: !cubit.isJoined ? Colors.green : Colors.red),
-                          onPressed: () {
-                            cubit.leaveChannel();
+                          onPressed: () async {
+                            await cubit.leaveChannel();
                           },
                           child: const Text('Leave'),
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(backgroundColor: cubit.isAudioEnabled ? Colors.green : Colors.red),
-                          onPressed: () {
-                            cubit.muteAudio();
+                          onPressed: () async {
+                            await cubit.muteAudio();
                           },
                           child: const Text('mute'),
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(backgroundColor: cubit.isVideoEnabled ? Colors.green : Colors.red),
-                          onPressed: () {
-                            cubit.disableVideo();
+                          onPressed: () async {
+                            await cubit.disableVideo();
                           },
                           child: const Text('video'),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: cubit.isVideoEnabled ? Colors.green : Colors.red),
+                          onPressed: () async {
+                            await cubit.switchCamera();
+                          },
+                          child: const Text('switch camera'),
                         ),
                       ],
                     ),

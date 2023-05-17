@@ -21,7 +21,7 @@ class AgoraVideoCubit extends Cubit<AgoraVideoState> {
 
   final RtcEngine engine = createAgoraRtcEngine();
 
-  bool isJoined = false, switchCamera = true, switchRender = true;
+  bool isJoined = false, frontCamera = true, switchRender = true;
   bool isAudioEnabled = true;
   bool isVideoEnabled = true;
 
@@ -83,11 +83,17 @@ class AgoraVideoCubit extends Cubit<AgoraVideoState> {
 
   Future<void> leaveChannel() async {
     await engine.leaveChannel();
+    // disable video and audio
+    await disableVideo();
+    await muteAudio();
+    // enable video and audio again
+    await disableVideo();
+    await muteAudio();
   }
 
-  Future<void> _switchCamera() async {
+  Future<void> switchCamera() async {
     await engine.switchCamera();
-    switchCamera = !switchCamera;
+    frontCamera = !frontCamera;
     emit(AgoraVideoCameraSwitch());
   }
 
@@ -98,24 +104,15 @@ class AgoraVideoCubit extends Cubit<AgoraVideoState> {
     return super.close();
   }
 
-  void disableVideo() {
+  Future<void> disableVideo() async {
     isVideoEnabled = !isVideoEnabled;
-    engine.muteLocalVideoStream(!isVideoEnabled);
-    // if (isVideoEnabled) {
-    //   engine.enableVideo();
-    // } else {
-    //   engine.disableVideo();
-    // }
+    await engine.muteLocalVideoStream(!isVideoEnabled);
     emit(AgoraVideoChangeVideoVisibility());
   }
 
-  void muteAudio() {
+  Future<void> muteAudio() async {
     isAudioEnabled = !isAudioEnabled;
-    //if (isAudioEnabled) {
-    engine.muteLocalAudioStream(!isAudioEnabled);
-    //} else {
-    //  engine.enableAudio();
-    //}
+    await engine.muteLocalAudioStream(!isAudioEnabled);
     emit(AgoraVideoChangeAudioMute());
   }
 }

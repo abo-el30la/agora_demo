@@ -1,7 +1,12 @@
 import 'package:agora_demo/agora_video_call/view/agora_video_view.dart';
+import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
+import 'bloc_obs.dart';
+
 void main() {
+  Bloc.observer = MyBlocObserver();
+
   runApp(const MyApp());
 }
 
